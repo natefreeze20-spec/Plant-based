@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pocket Garden 🌱</title>
+  <style>
+    :root {
+      --pink: #ff8fab;
+      --peach: #ffd6a5;
+      --yellow: #ffe66d;
+      --mint: #caffbf;
+      --sky: #bde0fe;
+      --ink: #493548;
+      --white: #fffafc;
+      --shadow: 0 12px 30px rgba(93, 61, 78, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--ink);
+      font-family: "Trebuchet MS", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, #ffffffaa 0 35px, transparent 36px),
+        radial-gradient(circle at 85% 15%, #ffffffaa 0 24px, transparent 25px),
+        linear-gradient(135deg, #ffd6e0, #cde8ff 55%, #d8ffd8);
+    }
+
+    .app {
+      width: min(100%, 460px);
+      overflow: hidden;
+      border: 4px solid #ffffffcc;
+      border-radius: 32px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    header {
+      padding: 28px 24px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #fff0f4, #fff9d6);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 8vw, 3rem);
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      opacity: 0.75;
+      font-size: 0.98rem;
+    }
+
+    .garden {
+      position: relative;
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow: hidden;
+      background:
+        linear-gradient(#bde0fe 0 63%, #a9e5a5 63% 100%);
+    }
+
+    .sun {
+      position: absolute;
+      top: 22px;
+      right: 28px;
+      width: 65px;
+      height: 65px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 2rem;
+      background: var(--yellow);
+      box-shadow: 0 0 0 10px #ffe66d55, 0 0 40px #ffe66d;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .cloud {
+      position: absolute;
+      top: 45px;
+      left: 28px;
+      font-size: 3rem;
+      opacity: 0.8;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+
+    .plant-wrap {
+      position: relative;
+      z-index: 1;
+      width: 230px;
+      text-align: center;
+      transform-origin: bottom center;
+      animation: sway 4s ease-in-out infinite;
+    }
+
+    .plant {
+      min-height: 150px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      font-size: 7rem;
+      line-height: 1;
+      filter: drop-shadow(0 8px 4px #52734d33);
+      transition: transform 0.35s ease, filter 0.35s ease;
+    }
+
+    .plant.bounce {
+      animation: bounce 0.55s ease;
+    }
+
+    .soil {
+      width: 220px;
+      height: 52px;
+      margin: -5px auto 0;
+      border-radius: 50%;
+      background: #8b5e45;
+      box-shadow: inset 0 7px 0 #6e4838, 0 8px 0 #74bd70;
+    }
+
+    .speech {
+      position: relative;
+      display: inline-block;
+      max-width: 230px;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 18px;
+      background: white;
+      box-shadow: 0 5px 15px #49354822;
+      font-size: 0.9rem;
+    }
+
+    .speech::after {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      border: 8px solid transparent;
+      border-top-color: white;
+      border-bottom: 0;
+      transform: translateX(-50%);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 20px 20px 10px;
+    }
+
+    .stat {
+      padding: 12px 8px;
+      text-align: center;
+      border-radius: 18px;
+      background: #fff2f6;
+    }
+
+    .stat:nth-child(2) {
+      background: #efffe9;
+    }
+
+    .stat:nth-child(3) {
+      background: #fff9dc;
+    }
+
+    .stat-icon {
+      display: block;
+      font-size: 1.5rem;
+    }
+
+    .stat-label {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+
+    .meter {
+      height: 8px;
+      margin-top: 8px;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #ffffff;
+    }
+
+    .meter-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--pink);
+      transition: width 0.4s ease;
+    }
+
+    .stat:nth-child(2) .meter-fill {
+      background: #76c893;
+    }
+
+    .stat:nth-child(3) .meter-fill {
+      background: #f4c542;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 14px 20px 20px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 17px;
+      padding: 13px 8px;
+      color: var(--ink);
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      background: #f6d6e2;
+      box-shadow: 0 4px 0 #dcaabc;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #dcaabc;
+    }
+
+    button:nth-child(2) {
+      background: #d9f5d0;
+      box-shadow-color: #9bcf91;
+    }
+
+    button:nth-child(3) {
+      background: #fff0af;
+      box-shadow-color: #dfc966;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px 22px;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .reset {
+      padding: 7px 11px;
+      font-size: 0.75rem;
+      background: transparent;
+      box-shadow: none;
+      text-decoration: underline;
+    }
+
+    @keyframes float {
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes drift {
+      to { transform: translateX(35px); }
+    }
+
+    @keyframes sway {
+      0%, 100% { transform: rotate(-2deg); }
+      50% { transform: rotate(2deg); }
+    }
+
+    @keyframes bounce {
+      35% { transform: translateY(-18px) scale(1.08); }
+      70% { transform: translateY(0) scale(0.96); }
+    }
+
+    @media (max-width: 380px) {
+      body {
+        padding: 10px;
+      }
+
+      .controls {
+        gap: 7px;
+        padding-inline: 12px;
+      }
+
+      .stats {
+        padding-inline: 12px;
+      }
+
+      button {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>My Pocket Garden 🌱</h1>
+      <p class="subtitle">A tiny plant with big feelings.</p>
+    </header>
+
+    <section class="garden" aria-label="Your pocket garden">
+      <div class="sun">☀️</div>
+      <div class="cloud">☁️</div>
+
+      <div class="plant-wrap">
+        <div id="plant" class="plant" aria-live="polite">🌱</div>
+        <div class="soil"></div>
+        <div id="speech" class="speech">Planting a tiny dream...</div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Plant stats">
+      <div class="stat">
+        <span class="stat-icon">💧</span>
+        <span class="stat-label">Hydration</span>
+        <div class="meter"><div id="waterMeter" class="meter-fill"></div></div>
+      </div>
+
+      <div class="stat">
+        <span class="stat-icon">🌞</span>
+        <span class="stat-label">Sunshine</span>
+        <div class="meter"><div id="sunMeter" class="meter-fill"></div></div>
+      </div>
+
+      <div class="stat">
+        <span class="stat-icon">💖</span>
+        <span class="stat-label">Happiness</span>
+        <div class="meter"><div id="happyMeter" class="meter-fill"></div></div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Plant actions">
+      <button id="waterButton">💧 Water</button>
+      <button id="sunButton">🌞 Sunshine</button>
+      <button id="talkButton">💬 Talk</button>
+    </section>
+
+    <div class="footer">
+      <span id="levelText">Level 1 sprout</span>
+      <button id="resetButton" class="reset">Start over</button>
+    </div>
+  </main>
+
+  <script>
+    const defaultState = {
+      water: 25,
+      sunshine: 25,
+      happiness: 25,
+      actions: 0
+    };
+
+    let state = loadState();
+
+    const plant = document.getElementById("plant");
+    const speech = document.getElementById("speech");
+    const waterMeter = document.getElementById("waterMeter");
+    const sunMeter = document.getElementById("sunMeter");
+    const happyMeter = document.getElementById("happyMeter");
+    const levelText = document.getElementById("levelText");
+
+    const messages = {
+      water: [
+        "Ahh, refreshing! 💦",
+        "My toes feel tingly! 🌱",
+        "Just the right amount of sprinkle!",
+        "I was thirsty as a cactus!"
+      ],
+      sunshine: [
+        "I love a sunny day! ☀️",
+        "Photosynthesis mode: activated!",
+        "You are my sunshine!",
+        "My leaves are doing a happy dance!"
+      ],
+      talk: [
+        "You are doing great too, you know. 💖",
+        "Tell me everything. I am an excellent listener.",
+        "If I could hug you, I would!",
+        "Today feels like a good day to grow."
+      ]
+    };
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem("pocketGarden")) || { ...defaultState };
+      } catch {
+        return { ...defaultState };
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem("pocketGarden", JSON.stringify(state));
+    }
+
+    function clamp(value) {
+      return Math.max(0, Math.min(100, value));
+    }
+
+    function randomItem(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function updatePlant() {
+      const average = Math.round(
+        (state.water + state.sunshine + state.happiness) / 3
+      );
+
+      let emoji = "🌱";
+      let level = "Level 1 sprout";
+
+      if (average >= 85) {
+        emoji = "🌳";
+        level = "Level 5 mighty tree";
+      } else if (average >= 68) {
+        emoji = "🌻";
+        level = "Level 4 happy flower";
+      } else if (average >= 48) {
+        emoji = "🌿";
+        level = "Level 3 leafy friend";
+      } else if (average >= 28) {
+        emoji = "🌱";
+        level = "Level 2 growing sprout";
+      }
+
+      plant.textContent = emoji;
+      waterMeter.style.width = `${state.water}%`;
+      sunMeter.style.width = `${state.sunshine}%`;
+      happyMeter.style.width = `${state.happiness}%`;
+      levelText.textContent = level;
+
+      plant.classList.remove("bounce");
+      void plant.offsetWidth;
+      plant.classList.add("bounce");
+
+      saveState();
+    }
+
+    function act(type) {
+      if (type === "water") {
+        state.water = clamp(state.water + 18);
+        state.happiness = clamp(state.happiness + 5);
+      }
+
+      if (type === "sunshine") {
+        state.sunshine = clamp(state.sunshine + 18);
+        state.happiness = clamp(state.happiness + 5);
+      }
+
+      if (type === "talk") {
+        state.happiness = clamp(state.happiness + 14);
+      }
+
+      state.actions += 1;
+      speech.textContent = randomItem(messages[type]);
+      updatePlant();
+    }
+
+    document.getElementById("waterButton")
+      .addEventListener("click", () => act("water"));
+
+    document.getElementById("sunButton")
+      .addEventListener("click", () => act("sunshine"));
+
+    document.getElementById("talkButton")
+      .addEventListener("click", () => act("talk"));
+
+    document.getElementById("resetButton").addEventListener("click", () => {
+      state = { ...defaultState };
+      speech.textContent = "A fresh little beginning! 🌱";
+      updatePlant();
+    });
+
+    // Plants slowly get thirsty and sleepy over time.
+    setInterval(() => {
+      state.water = clamp(state.water - 1);
+      state.sunshine = clamp(state.sunshine - 1);
+      state.happiness = clamp(state.happiness - 0.5);
+      updatePlant();
+    }, 12000);
+
+    updatePlant();
+  </script>
+</body>
+</html>
